@@ -1,33 +1,18 @@
 const express = require('express')
-const mongoose = require('mongoose');
 const path = require('path')
 require('dotenv').config()
+const mongoose = require('mongoose');
 const app = express()
 const port = 3000
+const indexRoute = require('./routes/client/index.route')
 
 mongoose.connect(process.env.DATABASE);
 
-const Tour = mongoose.model('Tour', {
-  name: String,
-  vehicle: String,
-}, "tours");
-
 app.set('views', path.join(__dirname, 'views'))
-
 app.set('view engine', 'pug')
-
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.render('client/pages/home')
-})
-
-app.get('/list', async (req, res) => {
-    const tourList = await Tour.find({});
-    res.render('client/pages/list', {
-      tourList: tourList
-    });
-})
+app.use('/', indexRoute)
 
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
