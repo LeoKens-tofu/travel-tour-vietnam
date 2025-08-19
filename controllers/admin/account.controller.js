@@ -14,3 +14,9 @@ module.exports.forgotPassword = (req, res) => {
     title: 'Admin Forgot Password'
   })
 }
+
+module.exports.otpPassword = (req, res) => {
+  res.render('admin/pages/otp-password',{
+    title: 'Admin OTP Password'
+  })
+}
