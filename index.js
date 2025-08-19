@@ -4,15 +4,16 @@ require('dotenv').config()
 const mongoose = require('mongoose');
 const app = express()
 const port = 3000
-const indexRoute = require('./routes/client/index.route')
+const clientRoute = require('./routes/client/index.route');
+const databaseConfig = require('./config/database.config');
 
-mongoose.connect(process.env.DATABASE);
+databaseConfig.connect();
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRoute)
+app.use('/', clientRoute)
 
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
