@@ -20,3 +20,9 @@ module.exports.otpPassword = (req, res) => {
     title: 'Admin OTP Password'
   })
 }
+
+module.exports.resetPassword = (req, res) => {
+  res.render('admin/pages/reset-password',{
+    title: 'Admin Reset Password'
+  })
+}
