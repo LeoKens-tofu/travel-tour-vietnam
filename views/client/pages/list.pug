@@ -1,7 +1,6 @@
 extends ../layouts/default.pug
 
-block main 
-    h1 Danh sach tour     
+block main     
     ul
         each item in tourList
             li #{item.name} (Phương tiện: #{item.vehicle}) 
