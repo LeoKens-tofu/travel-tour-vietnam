@@ -16,7 +16,7 @@ app.set('view engine', 'pug')
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.locals.pathAdmin = variableConfig.pathAdmin;
-app.use(`${variableConfig.pathAdmin}`, adminRoute);
+app.use(`/${variableConfig.pathAdmin}`, adminRoute);
 app.use('/', clientRoute)
 
 app.listen(port, () => {

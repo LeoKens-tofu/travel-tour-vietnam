@@ -8,3 +8,9 @@ module.exports.register = (req, res) => {
     title: 'Admin Register'
   })
 }
+
+module.exports.forgotPassword = (req, res) => {
+  res.render('admin/pages/forgot-password',{
+    title: 'Admin Forgot Password'
+  })
+}
