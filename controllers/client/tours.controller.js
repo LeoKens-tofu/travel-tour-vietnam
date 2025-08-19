@@ -7,3 +7,9 @@ module.exports.tour = async (req, res) => {
         tourList: tourList
     });
 }
+
+module.exports.detail = async (req, res) => {
+    res.render('client/pages/tour-detail', {
+        title: 'Tour Detail',
+    });
+}
