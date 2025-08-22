@@ -605,3 +605,17 @@ if(profileChangePasswordForm) {
   ;
 }
 // End Profile Change Password Form
+
+//sider
+const sider = document.querySelector(".sider");
+if (sider) {
+  const menuItems = sider.querySelectorAll("a");
+  const pathCurent = location.pathname.split('/');
+  menuItems.forEach(item => {
+    const pathItem = item.getAttribute("href").split('/');
+    if (pathItem[1] === pathCurent[1] && pathItem[2] === pathCurent[2]){
+      item.classList.add("active");
+    }
+  })
+}
+//end sider 
