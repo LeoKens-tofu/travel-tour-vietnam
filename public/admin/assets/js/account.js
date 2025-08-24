@@ -1,4 +1,4 @@
-// Login Form
+  // Login Form
 const loginForm = document.querySelector("#login-form");
 if(loginForm) {
   const validation = new JustValidate('#login-form');
@@ -138,9 +138,10 @@ if(registerForm) {
         .then(res => res.json())
         .then(data => {
           if (data.code === 'error') {
-            alert(data.message);
+            notyf.error(data.message);
           }
           else {
+            notify(data.code, data.message);
             window.location.href = `/${pathAdmin}/account/register-initial`;
           }
         })

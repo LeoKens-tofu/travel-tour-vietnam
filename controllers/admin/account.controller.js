@@ -1,4 +1,5 @@
 const AccountAdmin = require('../../models/accounts-admin.model');
+const bcrypt = require('bcryptjs');
 
 module.exports.login = (req, res) => {
   res.render('admin/pages/login', {
@@ -21,7 +22,7 @@ module.exports.registerInit = (req, res) => {
 module.exports.registerPost = async (req, res) => {
   const existAccount = await AccountAdmin.findOne({
     email: req.body.email
-  }).exec();
+  }).exec();``
 
   if (existAccount) {
     res.json({
@@ -31,9 +32,12 @@ module.exports.registerPost = async (req, res) => {
     return;
   }
 
+  const salt = await bcrypt.genSalt(10);
+  req.body.password = await bcrypt.hash(req.body.password, salt);
+
   req.body.status = 'initial';
 
-  const account = await new AccountAdmin(req.body);
+  const account = new AccountAdmin(req.body);
 
   account.save();
   res.json({
