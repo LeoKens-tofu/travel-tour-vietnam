@@ -38,8 +38,8 @@ module.exports.registerPost = async (req, res) => {
   req.body.status = 'initial';
 
   const account = new AccountAdmin(req.body);
-
-  account.save();
+  await account.save();
+  
   res.json({
     code: "success",
     message: "Đăng ký tài khoản thành công"
