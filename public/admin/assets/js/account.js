@@ -1,6 +1,6 @@
-  // Login Form
+// Login Form
 const loginForm = document.querySelector("#login-form");
-if(loginForm) {
+if (loginForm) {
   const validation = new JustValidate('#login-form');
 
   validation
@@ -19,43 +19,43 @@ if(loginForm) {
         rule: 'required',
         errorMessage: 'Vui lòng nhập mật khẩu!',
       },
-      {
-        validator: (value) => value.length >= 8,
-        errorMessage: 'Mật khẩu phải chứa ít nhất 8 ký tự!',
-      },
-      {
-        validator: (value) => /[A-Z]/.test(value),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ cái in hoa!',
-      },
-      {
-        validator: (value) => /[a-z]/.test(value),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ cái thường!',
-      },
-      {
-        validator: (value) => /\d/.test(value),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ số!',
-      },
-      {
-        validator: (value) => /[@$!%*?&]/.test(value),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt!',
-      },
     ])
     .onSuccess((event) => {
       const email = event.target.email.value;
       const password = event.target.password.value;
       const rememberPassword = event.target.rememberPassword.checked;
 
-      console.log(email);
-      console.log(password);
-      console.log(rememberPassword);
+      const loginAccount = {
+        email: email,
+        password: password
+      }
+
+      fetch(`/${pathAdmin}/account/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginAccount)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 'error') {
+            notyf.error(data.message);
+          }
+          else {
+            console.log("Notyf chạy tới đây", data);
+            notify(data.code, data.message);
+            window.location.href = `/${pathAdmin}/dashboard`;
+          }
+        })
     })
-  ;
+    ;
 }
 // End Login Form
 
 // Register Form
 const registerForm = document.querySelector("#register-form");
-if(registerForm) {
+if (registerForm) {
   const validation = new JustValidate('#register-form');
 
   validation
@@ -146,13 +146,13 @@ if(registerForm) {
           }
         })
     })
-  ;
-} 
+    ;
+}
 // End Register Form
 
 // Forgot Password Form
 const forgotPasswordForm = document.querySelector("#forgot-password-form");
-if(forgotPasswordForm) {
+if (forgotPasswordForm) {
   const validation = new JustValidate('#forgot-password-form');
 
   validation
@@ -170,13 +170,13 @@ if(forgotPasswordForm) {
       const email = event.target.email.value;
       console.log(email);
     })
-  ;
+    ;
 }
 // End Forgot Password Form
 
 // OTP Password Form
 const otpPasswordForm = document.querySelector("#otp-password-form");
-if(otpPasswordForm) {
+if (otpPasswordForm) {
   const validation = new JustValidate('#otp-password-form');
 
   validation
@@ -190,13 +190,13 @@ if(otpPasswordForm) {
       const otp = event.target.otp.value;
       console.log(otp);
     })
-  ;
+    ;
 }
 // End OTP Password Form
 
 // Reset Password Form
 const resetPasswordForm = document.querySelector("#reset-password-form");
-if(resetPasswordForm) {
+if (resetPasswordForm) {
   const validation = new JustValidate('#reset-password-form');
 
   validation
@@ -243,6 +243,6 @@ if(resetPasswordForm) {
       const password = event.target.password.value;
       console.log(password);
     })
-  ;
+    ;
 }
 // End Reset Password Form

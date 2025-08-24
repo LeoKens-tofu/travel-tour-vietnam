@@ -19,10 +19,46 @@ module.exports.registerInit = (req, res) => {
   })
 }
 
+module.exports.loginPost = async (req, res) => {
+  const { email, password} = req.body;
+  const existAccount = await AccountAdmin.findOne({
+    email: email,
+  })
+
+  if (!existAccount) {
+    res.json({
+      code: 'error',
+      message: 'Email chưa được đăng ký trên hệ thống!'
+    })
+    return;
+  }
+
+  if (!await bcrypt.compare(password, existAccount.password)) {
+    res.json({
+      code: 'error',
+      message: 'Mật khẩu không đúng!'
+    })
+    return;
+  }
+
+  if (existAccount.status != 'active') {
+    res.json({
+      code: 'error',
+      message: 'Tài khoản chưa được kích hoạt!'
+    })
+    return;
+  }
+
+  res.json({
+    code: 'success',
+    message: 'Đăng nhập thành công!'
+  })
+}
+
 module.exports.registerPost = async (req, res) => {
   const existAccount = await AccountAdmin.findOne({
     email: req.body.email
-  }).exec();``
+  }).exec(); ``
 
   if (existAccount) {
     res.json({
@@ -39,7 +75,7 @@ module.exports.registerPost = async (req, res) => {
 
   const account = new AccountAdmin(req.body);
   await account.save();
-  
+
   res.json({
     code: "success",
     message: "Đăng ký tài khoản thành công"
