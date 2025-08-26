@@ -1,5 +1,6 @@
 const AccountAdmin = require('../../models/accounts-admin.model');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 module.exports.login = (req, res) => {
   res.render('admin/pages/login', {
@@ -48,6 +49,23 @@ module.exports.loginPost = async (req, res) => {
     })
     return;
   }
+
+  const token = jwt.sign(
+    {
+      id: existAccount.id,
+      email: existAccount.email
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '1d'
+    }
+  );
+
+  res.cookie('token', token, {
+    maxAge: 24*60*60*1000,
+    httpOnly: true,
+    sameSite: 'strict'
+  });
 
   res.json({
     code: 'success',
