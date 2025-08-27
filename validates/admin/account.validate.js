@@ -21,16 +21,16 @@ module.exports.registerPost = (req, res, next) => {
       .required()
       .min(8)
       .custom((value, helpers) => {
-        if (!/[A-Z]/.test(value)){
+        if (!/[A-Z]/.test(value)) {
           return helpers.error('password.uppercase');
         }
-        if (!/[a-z]/.test(value)){
+        if (!/[a-z]/.test(value)) {
           return helpers.error('password.lowercase');
         }
         if (!/\d/.test(value)) {
           return helpers.error('password.num');
         }
-        if (!/[@$!%*?&]/.test(value)){
+        if (!/[@$!%*?&]/.test(value)) {
           return helpers.error('password.special');
         }
         return value;
@@ -49,7 +49,7 @@ module.exports.registerPost = (req, res, next) => {
   if (error) {
     res.json({
       code: "error",
-      message : error.details[0].message
+      message: error.details[0].message
     })
     return;
   }
@@ -70,13 +70,37 @@ module.exports.loginPost = (req, res, next) => {
       .messages({
         'string.empty': 'Vui lòng nhập password',
       }),
+    rememberPassword: Joi.boolean()
   });
 
   const { error } = schema.validate(req.body);
   if (error) {
     res.json({
       code: "error",
-      message : error.details[0].message
+      message: error.details[0].message
+    })
+    return;
+  }
+  next();
+}
+
+module.exports.forgotPasswordPost = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string()
+      .email()
+      .required()
+      .messages({
+        'string.empty': 'Vui lòng nhập email',
+        'string.email': 'Email không đúng định dạng!',
+      }),
+  });
+
+  const { error } = schema.validate(req.body);
+  
+  if (error) {
+    res.json({
+      code: "error",
+      message: error.details[0].message
     })
     return;
   }

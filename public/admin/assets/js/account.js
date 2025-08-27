@@ -27,7 +27,8 @@ if (loginForm) {
 
       const loginAccount = {
         email: email,
-        password: password
+        password: password,
+        rememberPassword: rememberPassword
       }
 
       fetch(`/${pathAdmin}/account/login`, {
@@ -168,7 +169,26 @@ if (forgotPasswordForm) {
     ])
     .onSuccess((event) => {
       const email = event.target.email.value;
-      console.log(email);
+      const accountData = {
+        email: email,
+      }
+
+      fetch(`/${pathAdmin}/account/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(accountData)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 'error') {
+            notyf.error(data.message);
+          }
+          else {
+            window.location.href = `/${pathAdmin}/account/otp-password`;
+          }
+        })
     })
     ;
 }

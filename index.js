@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 require('dotenv').config();
 const app = express()
+const cookieParser = require('cookie-parser');
 const port = 3000
 const clientRoute = require('./routes/client/index.route');
 const adminRoute = require('./routes/admin/index.route');
@@ -16,7 +17,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
 
+app.use(cookieParser());
+
 app.locals.pathAdmin = variableConfig.pathAdmin;
+global.pathAdmin = variableConfig.pathAdmin;
+
 app.use(`/${variableConfig.pathAdmin}`, adminRoute);
 app.use('/', clientRoute)
 

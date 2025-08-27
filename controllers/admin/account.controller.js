@@ -1,6 +1,7 @@
 const AccountAdmin = require('../../models/accounts-admin.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const generateHelper = require('../../helpers/generate.helper');
 
 module.exports.login = (req, res) => {
   res.render('admin/pages/login', {
@@ -21,7 +22,7 @@ module.exports.registerInit = (req, res) => {
 }
 
 module.exports.loginPost = async (req, res) => {
-  const { email, password} = req.body;
+  const { email, password, rememberPassword } = req.body;
   const existAccount = await AccountAdmin.findOne({
     email: email,
   })
@@ -57,12 +58,12 @@ module.exports.loginPost = async (req, res) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: '1d'
+      expiresIn: rememberPassword ? '7d' : '1d'
     }
   );
 
   res.cookie('token', token, {
-    maxAge: 24*60*60*1000,
+    maxAge: rememberPassword ? 7 * (24 * 60 * 60 * 1000) : (24 * 60 * 60 * 1000),
     httpOnly: true,
     sameSite: 'strict'
   });
@@ -76,7 +77,7 @@ module.exports.loginPost = async (req, res) => {
 module.exports.registerPost = async (req, res) => {
   const existAccount = await AccountAdmin.findOne({
     email: req.body.email
-  }).exec(); ``
+  }).exec();
 
   if (existAccount) {
     res.json({
@@ -106,6 +107,31 @@ module.exports.forgotPassword = (req, res) => {
   })
 }
 
+module.exports.forgotPasswordPost = async (req, res) => {
+  const { email } = req.body;
+
+  const existAccount = await AccountAdmin.findOne({
+    email: email,
+    status: 'active'
+  })
+
+  if (!existAccount) {
+    res.json({
+      code: 'error',
+      message: 'Email không tồn tại trong hệ thống!'
+    })
+    return;
+  }
+
+  const otp = generateHelper.generateRandomNumber(6);
+  console.log(otp);  
+
+  res.json({
+    code: 'error',
+    message: 'Lỗi'
+  })
+}
+
 module.exports.otpPassword = (req, res) => {
   res.render('admin/pages/otp-password', {
     title: 'Admin OTP Password'
@@ -115,5 +141,13 @@ module.exports.otpPassword = (req, res) => {
 module.exports.resetPassword = (req, res) => {
   res.render('admin/pages/reset-password', {
     title: 'Admin Reset Password'
+  })
+}
+
+module.exports.logoutPost = (req, res) => {
+  res.clearCookie('token');
+  res.json({
+    code: 'success',
+    message: 'Đăng xuất thành công!'
   })
 }
