@@ -162,12 +162,28 @@ if (categoryCreateForm) {
       }
       const description = tinymce.get("description").getContent();
 
-      console.log(name);
-      console.log(parent);
-      console.log(position);
-      console.log(status);
-      console.log(avatar);
-      console.log(description);
+      const finalForm = new FormData();
+      finalForm.append('name', name);
+      finalForm.append('parent', parent);
+      finalForm.append('position', position);
+      finalForm.append('status', status);
+      finalForm.append('avatar', avatar);
+      finalForm.append('description', description);
+
+      fetch(`/${pathAdmin}/category/create`, {
+        method: 'POST',
+        body: finalForm
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 'error') {
+            notyf.error(data.message);
+          }
+          else {
+            notify(data.code, data.message);
+            window.location.reload();
+          }
+        })
     })
     ;
 }

@@ -96,12 +96,73 @@ module.exports.forgotPasswordPost = (req, res, next) => {
   });
 
   const { error } = schema.validate(req.body);
-  
+
   if (error) {
     res.json({
       code: "error",
       message: error.details[0].message
     })
+    return;
+  }
+  next();
+}
+
+module.exports.otpPasswordPost = (req, res, next) => {
+  const schema = Joi.object({
+    otp: Joi.string()
+      .required()
+      .messages({
+        'string.empty': 'Vui lòng nhập mã OTP!'
+      }),
+    email: Joi.string()
+  })
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.json({
+      code: 'error',
+      message: error.details[0].message
+    })
+    return;
+  }
+  next();
+}
+
+module.exports.resetPasswordPost = (req, res, next) => {
+  const schema = Joi.object({
+    password: Joi.string()
+      .required()
+      .min(8)
+      .custom((value, helpers) => {
+        if (!/[A-Z]/.test(value)) {
+          return helpers.error('password.uppercase');
+        }
+        if (!/[a-z]/.test(value)) {
+          return helpers.error('password.lowercase');
+        }
+        if (!/\d/.test(value)) {
+          return helpers.error('password.num');
+        }
+        if (!/[@$!%*?&]/.test(value)) {
+          return helpers.error('password.special');
+        }
+        return value;
+      })
+      .messages({
+        'string.empty': 'Vui lòng nhập password',
+        'string.min': 'Mật khẩu phải chứa ít nhất 8 ký tự!',
+        'password.uppercase': 'Mật khẩu phải chứa ít nhất một chữ cái in hoa!',
+        'password.lowercase': 'Mật khẩu phải chứa ít nhất một chữ cái thường!',
+        'password.num': 'Mật khẩu phải chứa ít nhất một chữ số!',
+        'password.special': 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt!',
+      }),
+  })
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.json({
+      code: 'error',
+      message: error.details[0].message
+    });
     return;
   }
   next();

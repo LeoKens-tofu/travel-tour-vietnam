@@ -44,7 +44,6 @@ if (loginForm) {
             notyf.error(data.message);
           }
           else {
-            console.log("Notyf chạy tới đây", data);
             notify(data.code, data.message);
             window.location.href = `/${pathAdmin}/dashboard`;
           }
@@ -186,7 +185,7 @@ if (forgotPasswordForm) {
             notyf.error(data.message);
           }
           else {
-            window.location.href = `/${pathAdmin}/account/otp-password`;
+            window.location.href = `/${pathAdmin}/account/otp-password?email=${email}`;
           }
         })
     })
@@ -208,7 +207,31 @@ if (otpPasswordForm) {
     ])
     .onSuccess((event) => {
       const otp = event.target.otp.value;
-      console.log(otp);
+
+      const urlParams = new URLSearchParams(location.search);
+      const email = urlParams.get('email');
+
+      const accountData = {
+        email: email,
+        otp: otp,
+      }
+
+      fetch(`/${pathAdmin}/account/otp-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(accountData)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 'error') {
+            notyf.error(data.message);
+          }
+          else {
+            window.location.href = `/${pathAdmin}/account/reset-password`;
+          }
+        })
     })
     ;
 }
@@ -261,7 +284,28 @@ if (resetPasswordForm) {
     ])
     .onSuccess((event) => {
       const password = event.target.password.value;
-      console.log(password);
+
+      const accountData = {
+        password: password
+      }
+
+      fetch(`/${pathAdmin}/account/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(accountData)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 'error') {
+            notyf.error(data.message);
+          }
+          else {
+            notify(data.code, data.message);
+            window.location.href = `/${pathAdmin}/dashboard`;
+          }
+        })
     })
     ;
 }
