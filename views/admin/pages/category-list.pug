@@ -61,44 +61,31 @@ block main
             th Cập nhật bởi
             th Hành động
         tbody
-          tr
-            td(class="inner-center")
-              input(type="checkbox" class="inner-check")
-            td Danh mục 1
-            td
-              img(src="/admin/assets/images/tour-1.jpg" class="inner-avatar")
-            td(class="inner-center") 1
-            td(class="inner-center")
-              .badge.badge-green Hoạt động
-            td
-              div Lê Văn A
-              div.inner-time 16:30 - 20/10/2024
-            td
-              div Lê Văn A
-              div.inner-time 16:30 - 20/10/2024
-            td
-              .inner-buttons
-                button(class="inner-edit") <i class="fa-regular fa-pen-to-square"></i>
-                button(class="inner-delete") <i class="fa-regular fa-trash-can"></i>
-          tr
-            td(class="inner-center")
-              input(type="checkbox" class="inner-check")
-            td Danh mục 2
-            td
-              img(src="/admin/assets/images/tour-1.jpg" class="inner-avatar")
-            td(class="inner-center") 2
-            td(class="inner-center")
-              .badge.badge-green Hoạt động
-            td
-              div Lê Văn A
-              div.inner-time 16:30 - 20/10/2024
-            td
-              div Lê Văn A
-              div.inner-time 16:30 - 20/10/2024
-            td
-              .inner-buttons
-                button(class="inner-edit") <i class="fa-regular fa-pen-to-square"></i>
-                button(class="inner-delete") <i class="fa-regular fa-trash-can"></i>
+          each item in categoryList
+            tr
+              td(class="inner-center")
+                input(type="checkbox" class="inner-check")
+              td #{item.name}
+              td
+                img(src=item.avatar class="inner-avatar")
+              td(class="inner-center") #{item.position}
+              td(class="inner-center")
+                if (item.status == 'active')
+                  .badge.badge-green #{item.status}
+                else if (item.status == 'inactive') 
+                  .badge.badge-red #{item.status}
+                else 
+                  .badge.badge-orange #{item.status}
+              td
+                div #{item.createdByName}
+                div.inner-time #{item.createByTimeFormat}
+              td
+                div #{item.createdByName}
+                div.inner-time #{item.updateByTimeFormat}
+              td
+                .inner-buttons
+                  a(href=`/${pathAdmin}/category/edit/${item.id}` class="inner-edit") <i class="fa-regular fa-pen-to-square"></i>
+                  button(class="inner-delete" btn-delete data-api=`/${pathAdmin}/category/delete/${item.id}`) <i class="fa-regular fa-trash-can"></i>
   //- End Section 6
 
   //- Section 7
