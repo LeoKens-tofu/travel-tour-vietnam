@@ -4,9 +4,42 @@ const AccountAdmin = require("../../models/accounts-admin.model");
 const moment = require("moment");
 
 module.exports.list = async (req, res) => {
-  const categoryList = await Category.find({
+  const filter = {
     deleted: false,
-  }).sort({
+  };
+
+  //Filter Status
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+  //End Filter Status
+
+  //Filter CreatedBy
+  if (req.query.createdBy) {
+    filter.createdBy = req.query.createdBy;
+  }
+  //End Filter CreatedBy
+
+  const dateFilter = {};
+  //Filter Start Date
+  if (req.query.startDate) {
+    const startDate = moment(req.query.startDate).toDate();
+    dateFilter.$gte = startDate;
+  }
+  //End Filter Start Date
+
+  //Filter End Date
+  if (req.query.endDate) {
+    const endDate = moment(req.query.endDate).toDate();
+    dateFilter.$lte = endDate;
+  }
+  //End Filter End Date
+
+  if (Object.keys(dateFilter).length > 0) {
+    filter.createdAt = dateFilter;
+  }
+
+  const categoryList = await Category.find(filter).sort({
     position: "desc",
   });
 
@@ -26,9 +59,12 @@ module.exports.list = async (req, res) => {
     );
   }
 
+  const adminAccount = await AccountAdmin.find({});
+
   res.render("admin/pages/category-list", {
     title: "Category List",
     categoryList: categoryList,
+    adminAccount: adminAccount,
   });
 };
 
@@ -139,14 +175,14 @@ module.exports.deletePatch = async (req, res) => {
       {
         deleted: true,
         deletedBy: req.account.id,
-        deletedAt: Date.now()
+        deletedAt: Date.now(),
       }
     );
 
     res.json({
-      code: 'success',
-      message: 'Xóa bản ghi thành công!'
-    })
+      code: "success",
+      message: "Xóa bản ghi thành công!",
+    });
   } catch (error) {
     res.json({
       code: "error",

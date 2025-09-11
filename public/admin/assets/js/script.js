@@ -756,3 +756,98 @@ if (listBtnDelete.length > 0) {
   });
 }
 // End Button Delete
+
+// Filter Status
+const filterStatus = document.querySelector("[filter-status]");
+if (filterStatus) {
+  const url = new URL(window.location.href);
+  filterStatus.addEventListener("change", () => {
+    const value = filterStatus.value;
+    if (value) {
+      url.searchParams.set("status", value);
+    } else {
+      url.searchParams.delete("status");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("status");
+  if (valueCur) {
+    filterStatus.value = valueCur;
+  }
+}
+// End Filter Status
+
+//Filter CreateBy
+const filterCreatedBy = document.querySelector("[filter-created-by]");
+if (filterCreatedBy) {
+  const url = new URL(window.location.href);
+  filterCreatedBy.addEventListener("change", () => {
+    const value = filterCreatedBy.value;
+    if (value) {
+      url.searchParams.set("createdBy", value);
+    } else {
+      url.searchParams.delete("createdBy");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("createdBy");
+  if (valueCur) {
+    filterCreatedBy.value = valueCur;
+  }
+}
+//End Filter CreateBy
+
+//Filter Start Date
+const filterStartDate = document.querySelector("[filter-start-date]");
+if (filterStartDate) {
+  const url = new URL(window.location.href);
+  filterStartDate.addEventListener("change", () => {
+    const value = filterStartDate.value;
+    if (value) {
+      url.searchParams.set("startDate", value);
+    } else {
+      url.searchParams.delete("startDate");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("startDate");
+  if (valueCur) {
+    filterStartDate.value = valueCur;
+  }
+}
+//End Filter Start Date
+
+//Filter End Date
+const filterEndDate = document.querySelector("[filter-end-date]");
+if (filterEndDate) {
+  const url = new URL(window.location.href);
+  filterEndDate.addEventListener("change", () => {
+    const value = filterEndDate.value;
+    if (value) {
+      url.searchParams.set("endDate", value);
+    } else {
+      url.searchParams.delete("endDate");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("endDate");
+  if (valueCur) {
+    filterEndDate.value = valueCur;
+  }
+}
+//End Filter End Date
+
+//Reset Filter
+const filterReset = document.querySelector("[filter-reset]");
+if (filterReset) {
+  const url = new URL(window.location.href);
+  filterReset.addEventListener("click", () => {
+    url.search = "";
+    window.location.href = url.href;
+  });
+}
+//End Reset Filter
