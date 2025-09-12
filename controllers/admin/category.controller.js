@@ -2,6 +2,7 @@ const buildTree = require("../../helpers/tree.helper");
 const Category = require("../../models/category.model");
 const AccountAdmin = require("../../models/accounts-admin.model");
 const moment = require("moment");
+const slugify = require("slugify");
 
 module.exports.list = async (req, res) => {
   const filter = {
@@ -38,6 +39,14 @@ module.exports.list = async (req, res) => {
   if (Object.keys(dateFilter).length > 0) {
     filter.createdAt = dateFilter;
   }
+
+  //Searching
+  if (req.query.search) {
+    const keyWord = slugify(req.query.search);
+    const keyWordRegex = new RegExp(keyWord, "i");
+    filter.slug = keyWordRegex;
+  }
+  //End Searching
 
   const categoryList = await Category.find(filter).sort({
     position: "desc",
@@ -219,7 +228,7 @@ module.exports.changeMultiPatch = async (req, res) => {
           {
             deleted: true,
             deletedBy: req.account.id,
-            deletedAt: Date.now()
+            deletedAt: Date.now(),
           }
         );
         res.json({

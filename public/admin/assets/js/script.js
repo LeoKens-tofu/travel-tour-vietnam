@@ -902,3 +902,27 @@ if (checkMulti) {
   });
 }
 //End Check Multi
+
+//Searching Category
+const Searching = document.querySelector("[search]");
+if (Searching) {
+  const url = new URL(window.location.href);
+
+  Searching.addEventListener("keyup", (event) => {
+    if (event.code == "Enter") {
+      const value = Searching.value;
+      if (value) {
+        url.searchParams.set("search", value);
+      } else {
+        url.searchParams.delete("search");
+      }
+      window.location.href = url.href;
+    }
+  });
+
+  const valueCur = url.searchParams.get("search");
+  if (valueCur) {
+    Searching.value = valueCur;
+  }
+}
+//End Searching Category
