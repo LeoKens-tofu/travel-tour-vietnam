@@ -18,5 +18,7 @@ router.patch('/edit/:id',upload.single("avatar"), categoryValidate.createPost , 
 
 router.patch('/delete/:id', categoryController.deletePatch);
 
+router.patch('/check-multi', categoryController.changeMultiPatch);
+
 
 module.exports = router;

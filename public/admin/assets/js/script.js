@@ -851,3 +851,54 @@ if (filterReset) {
   });
 }
 //End Reset Filter
+
+//Check All
+const checkAll = document.querySelector("[check-all]");
+if (checkAll) {
+  checkAll.addEventListener("click", () => {
+    const listCheckItem = document.querySelectorAll("[check-item]");
+    listCheckItem.forEach((item) => {
+      item.checked = checkAll.checked;
+    });
+  });
+}
+//End Check All
+
+//Check Multi
+const checkMulti = document.querySelector("[check-multi]");
+if (checkMulti) {
+  const api = checkMulti.getAttribute("data-api");
+  const select = checkMulti.querySelector("select");
+  const button = checkMulti.querySelector("button");
+
+  button.addEventListener("click", () => {
+    const option = select.value;
+    const listCheckItem = document.querySelectorAll("[check-item]:checked");
+    const ids = [];
+    if (option && listCheckItem.length > 0) {
+      listCheckItem.forEach((item) => {
+        const id = item.getAttribute("check-item");
+        ids.push(id);
+      });
+
+      const finalData = {
+        option: option,
+        ids: ids,
+      };
+
+      fetch(api, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          notify(data.code, data.message);
+          window.location.reload();
+        });
+    }
+  });
+}
+//End Check Multi
