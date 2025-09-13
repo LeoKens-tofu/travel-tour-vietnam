@@ -1,7 +1,7 @@
 const buildTree = require("../../helpers/tree.helper");
 const Category = require("../../models/category.model");
 const AccountAdmin = require("../../models/accounts-admin.model");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const slugify = require("slugify");
 
 module.exports.list = async (req, res) => {
@@ -24,14 +24,16 @@ module.exports.list = async (req, res) => {
   const dateFilter = {};
   //Filter Start Date
   if (req.query.startDate) {
-    const startDate = moment(req.query.startDate).toDate();
+    const startDate = moment(req.query.startDate)
+      .tz("Asia/Ho_Chi_Minh")
+      .toDate();
     dateFilter.$gte = startDate;
   }
   //End Filter Start Date
 
   //Filter End Date
   if (req.query.endDate) {
-    const endDate = moment(req.query.endDate).toDate();
+    const endDate = moment(req.query.endDate).tz("Asia/Ho_Chi_Minh").toDate();
     dateFilter.$lte = endDate;
   }
   //End Filter End Date
@@ -83,12 +85,12 @@ module.exports.list = async (req, res) => {
   }
 
   for (let item of categoryList) {
-    item.createByTimeFormat = moment(item.createdAt).format(
-      "HH:mm - DD/MM/YYYY"
-    );
-    item.updateByTimeFormat = moment(item.updatedAt).format(
-      "HH:mm - DD/MM/YYYY"
-    );
+    item.createByTimeFormat = moment(item.createdAt)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("HH:mm - DD/MM/YYYY");
+    item.updateByTimeFormat = moment(item.updatedAt)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("HH:mm - DD/MM/YYYY");
   }
 
   const adminAccount = await AccountAdmin.find({});
