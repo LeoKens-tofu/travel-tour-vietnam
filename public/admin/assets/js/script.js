@@ -926,3 +926,25 @@ if (Searching) {
   }
 }
 //End Searching Category
+
+//Partition
+const pagination = document.querySelector('[pagination]');
+if (pagination) {
+  const url = new URL(window.location.href);
+  pagination.addEventListener("change", () => {
+    const value = pagination.value;
+    if (value) {
+      url.searchParams.set("page", value);
+    } else {
+      url.searchParams.delete("page");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("page");
+  if (valueCur) {
+    pagination.value = valueCur;
+  }
+}
+//End Partition
+

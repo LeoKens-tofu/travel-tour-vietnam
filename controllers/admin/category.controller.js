@@ -48,9 +48,32 @@ module.exports.list = async (req, res) => {
   }
   //End Searching
 
-  const categoryList = await Category.find(filter).sort({
-    position: "desc",
-  });
+  //Pagination
+  let page = 1;
+  const limitItems = 4;
+
+  if (req.query.page && parseInt(req.query.page) > 0) {
+    page = parseInt(req.query.page);
+  }
+
+  const skip = (page - 1) * limitItems;
+  const totalRecord = await Category.countDocuments({ deleted: false });
+  const totalPage = Math.ceil(totalRecord / limitItems);
+
+  const pagination = {
+    skip: skip,
+    totalRecord: totalRecord,
+    totalPage: totalPage,
+  };
+
+  //End Pagination
+
+  const categoryList = await Category.find(filter)
+    .sort({
+      position: "desc",
+    })
+    .limit(limitItems)
+    .skip(skip);
 
   for (let item of categoryList) {
     const infoAccount = await AccountAdmin.findOne({
@@ -74,6 +97,7 @@ module.exports.list = async (req, res) => {
     title: "Category List",
     categoryList: categoryList,
     adminAccount: adminAccount,
+    pagination: pagination,
   });
 };
 
