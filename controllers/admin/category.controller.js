@@ -59,7 +59,7 @@ module.exports.list = async (req, res) => {
   }
 
   const skip = (page - 1) * limitItems;
-  const totalRecord = await Category.countDocuments({ deleted: false });
+  const totalRecord = await Category.countDocuments(filter);
   const totalPage = Math.ceil(totalRecord / limitItems);
 
   const pagination = {

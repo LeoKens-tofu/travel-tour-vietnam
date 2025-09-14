@@ -775,6 +775,11 @@ if (filterStatus) {
   if (valueCur) {
     filterStatus.value = valueCur;
   }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
+  }
 }
 // End Filter Status
 
@@ -795,6 +800,11 @@ if (filterCreatedBy) {
   const valueCur = url.searchParams.get("createdBy");
   if (valueCur) {
     filterCreatedBy.value = valueCur;
+  }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
   }
 }
 //End Filter CreateBy
@@ -817,6 +827,11 @@ if (filterStartDate) {
   if (valueCur) {
     filterStartDate.value = valueCur;
   }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
+  }
 }
 //End Filter Start Date
 
@@ -837,6 +852,11 @@ if (filterEndDate) {
   const valueCur = url.searchParams.get("endDate");
   if (valueCur) {
     filterEndDate.value = valueCur;
+  }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
   }
 }
 //End Filter End Date
@@ -924,11 +944,16 @@ if (Searching) {
   if (valueCur) {
     Searching.value = valueCur;
   }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
+  }
 }
 //End Searching Category
 
 //Partition
-const pagination = document.querySelector('[pagination]');
+const pagination = document.querySelector("[pagination]");
 if (pagination) {
   const url = new URL(window.location.href);
   pagination.addEventListener("change", () => {
@@ -947,4 +972,3 @@ if (pagination) {
   }
 }
 //End Partition
-
