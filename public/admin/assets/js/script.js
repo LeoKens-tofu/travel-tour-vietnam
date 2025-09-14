@@ -187,6 +187,11 @@ if (categoryCreateForm) {
       finalForm.append("avatar", avatar);
       finalForm.append("description", description);
 
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
       fetch(`/${pathAdmin}/category/create`, {
         method: "POST",
         body: finalForm,
@@ -243,6 +248,11 @@ if (categoryEditForm) {
       finalForm.append("status", status);
       finalForm.append("avatar", avatar);
       finalForm.append("description", description);
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
 
       fetch(`/${pathAdmin}/category/edit/${id}`, {
         method: "PATCH",
@@ -326,26 +336,47 @@ if (tourCreateForm) {
       });
       // End schedules
 
-      console.log(name);
-      console.log(category);
-      console.log(position);
-      console.log(status);
-      console.log(avatar);
-      console.log(priceAdult);
-      console.log(priceChildren);
-      console.log(priceBaby);
-      console.log(priceNewAdult);
-      console.log(priceNewChildren);
-      console.log(priceNewBaby);
-      console.log(stockAdult);
-      console.log(stockChildren);
-      console.log(stockBaby);
-      console.log(locations);
-      console.log(time);
-      console.log(vehicle);
-      console.log(departureDate);
-      console.log(information);
-      console.log(schedules);
+      const finalForm = new FormData();
+
+      finalForm.append("name", name);
+      finalForm.append("category", category);
+      finalForm.append("position", position);
+      finalForm.append("status", status);
+      finalForm.append("avatar", avatar);
+      finalForm.append("priceAdult", priceAdult);
+      finalForm.append("priceChildren", priceChildren);
+      finalForm.append("priceBaby", priceBaby);
+      finalForm.append("priceNewAdult", priceNewAdult);
+      finalForm.append("priceNewChildren", priceNewChildren);
+      finalForm.append("priceNewBaby", priceNewBaby);
+      finalForm.append("stockAdult", stockAdult);
+      finalForm.append("stockChildren", stockChildren);
+      finalForm.append("stockBaby", stockBaby);
+      finalForm.append("locations", JSON.stringify(locations));
+      finalForm.append("time", time);
+      finalForm.append("vehicle", vehicle);
+      finalForm.append("departureDate", departureDate);
+      finalForm.append("information", information);
+      finalForm.append("schedules", JSON.stringify(schedules));
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/tour/create`, {
+        method: "POST",
+        body: finalForm,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+          } else {
+            notify(data.code, data.message);
+            window.location.reload();
+          }
+        });
     });
 }
 // End Tour Create Form

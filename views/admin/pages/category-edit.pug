@@ -34,6 +34,7 @@ block main
         label(class="inner-label" for="description") Mô tả
         textarea(id="description" textarea-mce name="description") #{categoryDetail.description}
       .inner-button.inner-two-col
-        button Cập nhật
+        button#btnSummit Cập nhật
+      div#loader
     .inner-back
       a(href=`/${pathAdmin}/category/list`) Quay lại danh sách
