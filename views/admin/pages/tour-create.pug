@@ -69,8 +69,8 @@ block main
         .inner-checkbox-list
           each item in cityList
             .inner-checkbox-item
-              input(type="checkbox" name="locations" value=item.name)
-              label #{item.name}
+              input(type="checkbox" name="locations" value=item.id id=`location-${item.id}` )
+              label(for=`location-${item.id}`) #{item.name}
       .inner-group
         label(class="inner-label" for="time") Thời gian
         input(type="text" id="time" name="time")

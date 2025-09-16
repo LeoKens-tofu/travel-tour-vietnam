@@ -81,7 +81,18 @@ module.exports.list = async (req, res) => {
     const infoAccount = await AccountAdmin.findOne({
       _id: item.createdBy,
     });
-    if (infoAccount) item.createdByName = infoAccount.fullName;
+    if (infoAccount){
+      item.createdByName = infoAccount.fullName;
+    }
+  }
+
+  for (let item of categoryList) {
+    const infoAccount = await AccountAdmin.findOne({
+      _id: item.updatedBy,
+    });
+    if (infoAccount){
+      item.updatedByName = infoAccount.fullName;
+    }
   }
 
   for (let item of categoryList) {
