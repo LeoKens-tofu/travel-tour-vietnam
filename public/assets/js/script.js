@@ -292,7 +292,27 @@ if(emailForm) {
     ])
     .onSuccess((event) => {
       const email = event.target.email.value;
-      console.log(email);
+
+      const finalData = {
+        email: email
+      }
+      
+      fetch(`/contact/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+          } else {
+            notyf.success(data.message);
+            emailForm.value = "";
+          }
+        });
     })
   ;
 }

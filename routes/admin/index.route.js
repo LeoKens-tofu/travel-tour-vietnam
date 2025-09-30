@@ -8,7 +8,7 @@ const userRoute = require('./user.route');
 const contactRoute = require('./contact.route');
 const settingRoute = require('./setting.route');
 const profileRoute = require('./profile.route');
-const authMiddleWare = require('../../middlewares/auth.middleware');
+const authMiddleWare = require('../../middlewares/admin/auth.middleware');
 
 router.use('/account', accountRoute);
 router.use('/dashboard',authMiddleWare.verifyToken, dashboradRoute);

@@ -7,6 +7,11 @@ const City = require("../../models/city.model");
 const slugify = require("slugify");
 
 module.exports.list = async (req, res) => {
+  if (!req.permissions.includes("tour-view")){
+    res.redirect(`/${pathAdmin}/404NOTFOUND`);
+    return;
+  }
+  
   const filter = {
     deleted: false,
   };
@@ -52,6 +57,40 @@ module.exports.list = async (req, res) => {
   }
   //End Searching
 
+  //Filter Price
+  let priceFilter = {};
+
+  let rolePrice = null;
+  if (req.query.price) {
+    rolePrice = req.query.price;
+  }
+  if (req.query.minPrice && req.query.maxPrice) {
+    const minPrice = parseInt(req.query.minPrice);
+    const maxPrice = parseInt(req.query.maxPrice);
+
+    priceFilter.$gte = minPrice;
+    priceFilter.$lte = maxPrice;
+  }
+
+  if (rolePrice) {
+    if (Object.keys(priceFilter).length > 0) {
+      if (rolePrice == "priceNewAdult") {
+        filter.priceNewAdult = priceFilter;
+      } else if (rolePrice == "priceNewChildren") {
+        filter.priceNewChildren = priceFilter;
+      } else if (rolePrice == "priceNewBaby") {
+        filter.priceNewBaby = priceFilter;
+      }
+    }
+  }
+  //End Filter Price
+
+  //Filter Category
+  if (req.query.category) {
+    filter.category = req.query.category;
+  }
+  //Filter Category
+
   let page = 1;
   const limitItems = 4;
 
@@ -68,11 +107,12 @@ module.exports.list = async (req, res) => {
     totalPage: totalPage,
   };
 
-  const tourList = await Tour.find(filter).sort({
-    position: "desc",
-  })
-  .limit(limitItems)
-  .skip(skip);
+  const tourList = await Tour.find(filter)
+    .sort({
+      position: "desc",
+    })
+    .limit(limitItems)
+    .skip(skip);
 
   for (let item of tourList) {
     const infoAccount = await AccountAdmin.findOne({
@@ -102,11 +142,13 @@ module.exports.list = async (req, res) => {
   }
 
   const adminAccount = await AccountAdmin.find({});
+  const categoryList = await Category.find({ deleted: false });
 
   res.render("admin/pages/tour-list", {
     title: "Tour List",
     tourList: tourList,
     adminAccount: adminAccount,
+    categoryList: categoryList,
     pagination: pagination,
   });
 };
@@ -173,9 +215,75 @@ module.exports.createPost = async (req, res) => {
   });
 };
 
-module.exports.trash = (req, res) => {
+module.exports.trash = async (req, res) => {
+  const filter = {
+    deleted: true,
+  };
+
+  //Pagination
+  let page = 1;
+  const limitItems = 4;
+
+  if (req.query.page && parseInt(req.query.page) > 0) {
+    page = parseInt(req.query.page);
+  }
+  const skip = (page - 1) * limitItems;
+  const totalRecord = await Tour.countDocuments(filter);
+  const totalPage = Math.ceil(totalRecord / limitItems);
+
+  const pagination = {
+    skip: skip,
+    totalRecord: totalRecord,
+    totalPage: totalPage,
+  };
+  //End Pagination
+
+  //Searching
+  if (req.query.search) {
+    const keyWord = slugify(req.query.search);
+    const keyWordRegex = new RegExp(keyWord, "i");
+    filter.slug = keyWordRegex;
+  }
+  //End Searching
+
+  const tourList = await Tour.find(filter)
+    .sort({
+      position: "desc",
+    })
+    .limit(limitItems)
+    .skip(skip);
+
+  for (let item of tourList) {
+    const infoAccount = await AccountAdmin.findOne({
+      _id: item.createdBy,
+    });
+    if (infoAccount) {
+      item.createdByName = infoAccount.fullName;
+    }
+  }
+
+  for (let item of tourList) {
+    const infoAccount = await AccountAdmin.findOne({
+      _id: item.deletedBy,
+    });
+    if (infoAccount) {
+      item.deletedByName = infoAccount.fullName;
+    }
+  }
+
+  for (let item of tourList) {
+    item.createByTimeFormat = moment(item.createdAt)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("HH:mm - DD/MM/YYYY");
+    item.deleteByTimeFormat = moment(item.deletedAt)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("HH:mm - DD/MM/YYYY");
+  }
+
   res.render("admin/pages/tour-trash", {
     title: "Tour Trash",
+    tourList: tourList,
+    pagination: pagination,
   });
 };
 
@@ -340,6 +448,29 @@ module.exports.changeMultiPatch = async (req, res) => {
           message: "Cập nhật bản ghi thành công!",
         });
         break;
+      case "undo":
+        await Tour.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            deleted: false,
+          }
+        );
+        res.json({
+          code: "success",
+          message: "Cập nhật bản ghi thành công!",
+        });
+        break;
+      case "destroy":
+        await Tour.deleteMany({
+          _id: { $in: ids },
+        });
+        res.json({
+          code: "success",
+          message: "Xóa bản ghi thành công!",
+        });
+        break;
       case "deleted":
         await Tour.updateMany(
           {
@@ -367,6 +498,51 @@ module.exports.changeMultiPatch = async (req, res) => {
     res.json({
       code: "error",
       message: "Lỗi không thể thay đổi trạng thái!",
+    });
+  }
+};
+
+module.exports.undoPatch = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Tour.updateOne(
+      {
+        _id: id,
+      },
+      {
+        deleted: false,
+      }
+    );
+
+    res.json({
+      code: "success",
+      message: "Cập nhật bản ghi thành công!",
+    });
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "Không tìm thấy được bản ghi!",
+    });
+  }
+};
+
+module.exports.destroyDelete = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Tour.deleteOne({
+      _id: id,
+    });
+
+    res.json({
+      code: "success",
+      message: "Xóa bản ghi thành công!",
+    });
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "Không tìm thấy được bản ghi!",
     });
   }
 };

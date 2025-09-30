@@ -18,6 +18,10 @@ router.post(
 
 router.get("/trash", tourController.trash);
 
+router.patch("/trash/undo/:id", tourController.undoPatch);
+
+router.delete("/trash/destroy/:id", tourController.destroyDelete);
+
 router.get('/edit/:id', tourController.edit);
 
 router.patch(
@@ -31,4 +35,7 @@ router.patch('/delete/:id', tourController.deletePatch);
 
 router.patch('/check-multi', tourController.changeMultiPatch);
 
+router.delete('/check-multi', tourController.changeMultiPatch);
+
 module.exports = router;
+

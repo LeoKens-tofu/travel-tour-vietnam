@@ -200,7 +200,7 @@ if (categoryCreateForm) {
         .then((data) => {
           if (data.code === "error") {
             notyf.error(data.message);
-            btnSummit.style.display = "block";
+            btnSummit.style.display = "inline";
           } else {
             notify(data.code, data.message);
             window.location.reload();
@@ -263,9 +263,12 @@ if (categoryEditForm) {
         .then((data) => {
           if (data.code === "error") {
             notyf.error(data.message);
-            btnSummit.style.display = "block";
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
           } else {
             notyf.success(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
           }
         });
     });
@@ -374,7 +377,7 @@ if (tourCreateForm) {
         .then((data) => {
           if (data.code === "error") {
             notyf.error(data.message);
-            btnSummit.style.display = "block";
+            btnSummit.style.display = "inline";
           } else {
             notify(data.code, data.message);
             window.location.reload();
@@ -585,19 +588,57 @@ if (settingWebsiteInfoForm) {
       let logo = null;
       if (logos.length > 0) {
         logo = logos[0].file;
+        const elementImageDefault =
+          event.target.logo.closest("[image-default]");
+        const imageDefault = elementImageDefault.getAttribute("image-default");
+        if (imageDefault.includes(logo.name)) {
+          logo = undefined;
+        }
       }
+
       const favicons = filePond.favicon.getFiles();
       let favicon = null;
       if (favicons.length > 0) {
         favicon = favicons[0].file;
+        const elementImageDefault =
+          event.target.favicon.closest("[image-default]");
+        const imageDefault = elementImageDefault.getAttribute("image-default");
+        if (imageDefault.includes(favicon.name)) {
+          favicon = undefined;
+        }
       }
 
-      console.log(websiteName);
-      console.log(phone);
-      console.log(email);
-      console.log(address);
-      console.log(logo);
-      console.log(favicon);
+      const finalForm = new FormData();
+
+      finalForm.append("websiteName", websiteName);
+      finalForm.append("phone", phone);
+      finalForm.append("email", email);
+      finalForm.append("address", address);
+      finalForm.append("logo", logo);
+      finalForm.append("favicon", favicon);
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/web-info`, {
+        method: "PATCH",
+        body: finalForm,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notyf.success(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
     });
 }
 // End Setting Website Info Form
@@ -693,17 +734,149 @@ if (settingAccountAdminCreateForm) {
         avatar = avatars[0].file;
       }
 
-      console.log(fullName);
-      console.log(email);
-      console.log(phone);
-      console.log(role);
-      console.log(positionCompany);
-      console.log(status);
-      console.log(password);
-      console.log(avatar);
+      const finalForm = new FormData();
+      finalForm.append("fullName", fullName);
+      finalForm.append("email", email);
+      finalForm.append("phone", phone);
+      finalForm.append("role", role);
+      finalForm.append("positionCompany", positionCompany);
+      finalForm.append("status", status);
+      finalForm.append("password", password);
+      finalForm.append("avatar", avatar);
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/account-admin/create`, {
+        method: "POST",
+        body: finalForm,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notify(data.code, data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
     });
 }
 // End Setting Account Admin Create Form
+
+// Setting Account Admin Edit Form
+const settingAccountAdminEditForm = document.querySelector(
+  "#setting-account-admin-edit-form"
+);
+if (settingAccountAdminEditForm) {
+  const validation = new JustValidate("#setting-account-admin-edit-form");
+
+  validation
+    .addField("#fullName", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập họ tên!",
+      },
+      {
+        rule: "minLength",
+        value: 5,
+        errorMessage: "Họ tên phải có ít nhất 5 ký tự!",
+      },
+      {
+        rule: "maxLength",
+        value: 50,
+        errorMessage: "Họ tên không được vượt quá 50 ký tự!",
+      },
+    ])
+    .addField("#email", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập email!",
+      },
+      {
+        rule: "email",
+        errorMessage: "Email không đúng định dạng!",
+      },
+    ])
+    .addField("#phone", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập số điện thoại!",
+      },
+      {
+        rule: "customRegexp",
+        value: /(84|0[3|5|7|8|9])+([0-9]{8})\b/g,
+        errorMessage: "Số điện thoại không đúng định dạng!",
+      },
+    ])
+    .addField("#positionCompany", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập chức vụ!",
+      },
+    ])
+    .onSuccess((event) => {
+      const id = event.target.ID.value;
+      const fullName = event.target.fullName.value;
+      const email = event.target.email.value;
+      const phone = event.target.phone.value;
+      const role = event.target.role.value;
+      const positionCompany = event.target.positionCompany.value;
+      const status = event.target.status.value;
+      const avatars = filePond.avatar.getFiles();
+      let avatar = null;
+      if (avatars.length > 0) {
+        avatar = avatars[0].file;
+        const elementImageDefault =
+          event.target.avatar.closest("[image-default]");
+        if (elementImageDefault) {
+          const imageDefault =
+            elementImageDefault.getAttribute("image-default");
+          if (imageDefault.includes(avatar.name)) {
+            avatar = undefined;
+          }
+        }
+      }
+      const finalForm = new FormData();
+      finalForm.append("fullName", fullName);
+      finalForm.append("email", email);
+      finalForm.append("phone", phone);
+      finalForm.append("role", role);
+      finalForm.append("positionCompany", positionCompany);
+      finalForm.append("status", status);
+      finalForm.append("avatar", avatar);
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/account-admin/edit/${id}`, {
+        method: "PATCH",
+        body: finalForm,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notify(data.code, data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
+    });
+}
+// End Setting Account Admin Edit Form
 
 // Setting Role Create Form
 const settingRoleCreateForm = document.querySelector(
@@ -733,12 +906,103 @@ if (settingRoleCreateForm) {
       });
       // End permissions
 
-      console.log(name);
-      console.log(description);
-      console.log(permissions);
+      const finalData = {
+        name: name,
+        description: description,
+        permissions: permissions,
+      };
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/role/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notify(data.code, data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
     });
 }
 // End Setting Role Create Form
+
+//Setting Sales
+const settingSaleForm = document.querySelector("#setting-sales-form");
+if (settingSaleForm) {
+  const validation = new JustValidate("#setting-sales-form");
+
+  validation
+    .addField("#saleName", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập tên ưu đãi!",
+      },
+    ])
+    .onSuccess((event) => {
+      const saleName = event.target.saleName.value;
+      const endDate = event.target.endDate.value;
+      const salePrice = event.target.salePrice.value;
+      const saleTour = [];
+
+      //saleTour
+      const listElementSales = settingSaleForm.querySelectorAll(
+        'input[name="saleTour"]:checked'
+      );
+      listElementSales.forEach((input) => {
+        saleTour.push(input.value);
+      });
+      //End saleTour
+
+      const finalData = {
+        saleName: saleName,
+        endDate: endDate,
+        salePrice: salePrice,
+        saleTour: JSON.stringify(saleTour)
+      };
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/sales`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notyf.success(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
+    });
+}
+//End Setting Sales
 
 // Profile Edit Form
 const profileEditForm = document.querySelector("#profile-edit-form");
@@ -789,14 +1053,45 @@ if (profileEditForm) {
       const phone = event.target.phone.value;
       const avatars = filePond.avatar.getFiles();
       let avatar = null;
+
       if (avatars.length > 0) {
         avatar = avatars[0].file;
+        const elementImageDefault =
+          event.target.avatar.closest("[image-default]");
+        const imageDefault = elementImageDefault.getAttribute("image-default");
+        if (imageDefault.includes(avatar.name)) {
+          avatar = undefined;
+        }
       }
 
-      console.log(fullName);
-      console.log(email);
-      console.log(phone);
-      console.log(avatar);
+      const finalForm = new FormData();
+      finalForm.append("fullName", fullName);
+      finalForm.append("email", email);
+      finalForm.append("phone", phone);
+      finalForm.append("avatar", avatar);
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/profile/edit`, {
+        method: "PATCH",
+        body: finalForm,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notify(data.code, data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
     });
 }
 // End Profile Edit Form
@@ -851,6 +1146,27 @@ if (profileChangePasswordForm) {
     .onSuccess((event) => {
       const password = event.target.password.value;
       console.log(password);
+
+      const finalData = {
+        password: password,
+      };
+
+      fetch(`/${pathAdmin}/profile/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+          } else {
+            notify(data.code, data.message);
+            window.location.reload();
+          }
+        });
     });
 }
 // End Profile Change Password Form
@@ -1016,6 +1332,77 @@ if (filterEndDate) {
 }
 //End Filter End Date
 
+//Filter Price
+const filterPrice = document.querySelector("[filter-price]");
+if (filterPrice) {
+  const url = new URL(window.location.href);
+  filterPrice.addEventListener("change", () => {
+    const value = filterPrice.value;
+    if (value) {
+      url.searchParams.set("price", value);
+    } else {
+      url.searchParams.delete("price");
+    }
+
+    const priceValue = slider.noUiSlider.get();
+    const minPrice = parseInt(priceValue[0]);
+    const maxPrice = parseInt(priceValue[1]);
+
+    if (minPrice && maxPrice) {
+      url.searchParams.set("minPrice", minPrice);
+      url.searchParams.set("maxPrice", maxPrice);
+    } else {
+      url.searchParams.delete("minPrice", minPrice);
+      url.searchParams.delete("maxPrice", maxPrice);
+    }
+
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("price");
+  if (valueCur) {
+    filterPrice.value = valueCur;
+  }
+
+  const valCurMinPrice = url.searchParams.get("minPrice");
+  const valCurMaxPrice = url.searchParams.get("maxPrice");
+  if (valCurMinPrice && valCurMaxPrice) {
+    slider.noUiSlider.set([Number(valCurMinPrice), Number(valCurMaxPrice)]);
+  }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
+  }
+}
+//End Filter Price
+
+//Filter Category
+const filterCategory = document.querySelector("[filter-category]");
+if (filterCategory) {
+  const url = new URL(window.location.href);
+  filterCategory.addEventListener("change", () => {
+    const value = filterCategory.value;
+    if (value) {
+      url.searchParams.set("category", value);
+    } else {
+      url.searchParams.delete("category");
+    }
+    window.location.href = url.href;
+  });
+
+  const valueCur = url.searchParams.get("category");
+  if (valueCur) {
+    filterCategory.value = valueCur;
+  }
+
+  const resetPageNumber = url.searchParams.get("page");
+  if (resetPageNumber) {
+    url.searchParams.delete("page");
+  }
+}
+//End Filter Category
+
 //Reset Filter
 const filterReset = document.querySelector("[filter-reset]");
 if (filterReset) {
@@ -1061,18 +1448,45 @@ if (checkMulti) {
         ids: ids,
       };
 
-      fetch(api, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(finalData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          notify(data.code, data.message);
-          window.location.reload();
+      if (option == "destroy") {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(api, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(finalData),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                notify(data.code, data.message);
+                window.location.reload();
+              });
+          }
         });
+      } else {
+        fetch(api, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalData),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            notify(data.code, data.message);
+            window.location.reload();
+          });
+      }
     }
   });
 }
@@ -1127,3 +1541,123 @@ if (pagination) {
   }
 }
 //End Partition
+
+//Button Undo
+const listBtnUndo = document.querySelectorAll("[btn-undo]");
+if (listBtnUndo.length > 0) {
+  listBtnUndo.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const dataApi = btn.getAttribute("data-api");
+      fetch(dataApi, {
+        method: "PATCH",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+          } else {
+            notify(data.code, data.message);
+            window.location.reload();
+          }
+        });
+    });
+  });
+}
+//End Button Undo
+
+//Button Destroy
+const listBtnDestroy = document.querySelectorAll("[btn-destroy]");
+if (listBtnDestroy.length > 0) {
+  listBtnDestroy.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const dataApi = btn.getAttribute("data-api");
+          fetch(dataApi, {
+            method: "DELETE",
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.code === "error") {
+                notyf.error(data.message);
+              } else {
+                notify(data.code, data.message);
+                window.location.reload();
+              }
+            });
+        }
+      });
+    });
+  });
+}
+//End Button Delete
+
+//Role Edit
+const settingRoleEditForm = document.querySelector("#setting-role-edit-form");
+if (settingRoleEditForm) {
+  const validation = new JustValidate("#setting-role-edit-form");
+
+  validation
+    .addField("#name", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập tên nhóm quyền!",
+      },
+    ])
+    .onSuccess((event) => {
+      const id = event.target.ID.value;
+      const name = event.target.name.value;
+      const description = event.target.description.value;
+      const permissions = [];
+
+      // permissions
+      const listElementPermission = settingRoleEditForm.querySelectorAll(
+        'input[name="permissions"]:checked'
+      );
+      listElementPermission.forEach((input) => {
+        permissions.push(input.value);
+      });
+      // End permissions
+
+      const finalData = {
+        name: name,
+        description: description,
+        permissions: permissions,
+      };
+
+      const loader = document.getElementById("loader");
+      loader.style.display = "block";
+      const btnSummit = document.querySelector("#btnSummit");
+      btnSummit.style.display = "none";
+
+      fetch(`/${pathAdmin}/setting/role/edit/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === "error") {
+            notyf.error(data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+          } else {
+            notify(data.code, data.message);
+            btnSummit.style.display = "inline";
+            loader.style.display = "none";
+            window.location.reload();
+          }
+        });
+    });
+}
+//End Role Edit

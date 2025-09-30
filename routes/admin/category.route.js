@@ -20,5 +20,12 @@ router.patch('/delete/:id', categoryController.deletePatch);
 
 router.patch('/check-multi', categoryController.changeMultiPatch);
 
+router.get('/trash', categoryController.trash);
+
+router.patch('/trash/undo/:id', categoryController.undoPatch);
+
+router.delete('/trash/destroy/:id', categoryController.destroyDelete);
+
+router.delete('/check-multi', categoryController.changeMultiPatch);
 
 module.exports = router;

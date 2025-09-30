@@ -1,0 +1,28 @@
+extends ../layouts/default.pug
+
+block main
+  h1.box-title Ưu đãi hẹn giờ
+
+  .section-8
+    form#setting-sales-form
+      .inner-group
+        label(class="inner-label" for="saleName") Tên ưu đãi
+        input(type="text" id="saleName" name="saleName" value=sale.saleName)
+      .inner-group
+        label(class="inner-label" for="endDate") Thời gian kết thúc
+        input(type="date" id="endDate" name="endDate" value=sale.endDateFormat)
+      .inner-group
+        label(class="inner-label" for="salePrice") Giá giảm
+        input(type="number" id="salePrice" name="salePrice" value=sale.salePrice)
+      .inner-group
+        label(class="inner-label" for="saleTour") Tour giảm giá
+        .inner-checkbox-list
+          each item in tourList
+            .inner-checkbox-item
+              input(type="checkbox" name="saleTour" value=item.id id=`saleTour-${item.id}` checked=(sale.saleTour.includes(item.id)))
+              label(for=`saleTour-${item.id}`) #{item.name}
+      .inner-button.inner-two-col
+        button#btnSummit Cập nhật
+      div#loader
+    .inner-back
+      a(href=`/${pathAdmin}/setting/list`) Quay lại danh sách 
