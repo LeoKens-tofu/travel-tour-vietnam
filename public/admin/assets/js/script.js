@@ -1414,6 +1414,7 @@ if (filterReset) {
 }
 //End Reset Filter
 
+
 //Check All
 const checkAll = document.querySelector("[check-all]");
 if (checkAll) {

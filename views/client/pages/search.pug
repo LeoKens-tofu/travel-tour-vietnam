@@ -3,7 +3,6 @@ include ../mixins/product.pug
 include ../mixins/breadcrum.pug
 
 block main     
-    +breadcrumb(breadcrumb)
     // Section 9
     .section-9
         .container
@@ -63,8 +62,7 @@ block main
                     // End Box Filter
                 .inner-right
                     .inner-info
-                        h2.inner-title #{categoryDetail.name}
-                        .inner-desc !{categoryDetail.description}
+                        h2.inner-title Kết quả tìm kiếm
                     .inner-info-2
                         .inner-sort
                             .inner-label Sắp xếp:
@@ -82,8 +80,7 @@ block main
                                     | Xem Nhiều
                                     i.fa-solid.fa-eye
                         .inner-count-record
-                            | Tất cả:
-                            b #{tourList.length}
+                            | Tất cả: 101
                         button.inner-filter-mobile
                             span.inner-title Bộ Lọc
                             i.fa-solid.fa-filter
