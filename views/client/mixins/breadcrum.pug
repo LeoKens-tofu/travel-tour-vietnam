@@ -1,4 +1,4 @@
-mixin breadcrumb(list)
+mixin breadcrumb(list, name)
     // Breadcrumb
     - const itemLast = list[list.length - 1];
     .box-breadcrumb
@@ -13,5 +13,8 @@ mixin breadcrumb(list)
                 .inner-list
                     a(href="/") Trang Chủ
                     each item in list
-                        a(href=`/category/${item.slug}`) #{item.name}
+                        if (name == 'category')
+                            a(href=`/category/${item.slug}`) #{item.name}
+                        else 
+                            a(href=`/tour/detail/${item.slug}`) #{item.name}
     // End Breadcrumb
