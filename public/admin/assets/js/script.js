@@ -107,6 +107,38 @@ if (listFilepondImage.length > 0) {
 }
 // End Filepond Image
 
+// Filepond Image Multi
+const listFilepondImageMulti = document.querySelectorAll("[filepond-image-multi]");
+let filePondMulti = {};
+if(listFilepondImageMulti.length > 0) {
+  listFilepondImageMulti.forEach(filepondImage => {
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+
+    let files = null;
+    const elementListImageDefault = filepondImage.closest("[list-image-default]");
+    if(elementListImageDefault) {
+      let listImageDefault = elementListImageDefault.getAttribute("list-image-default");
+      if(listImageDefault) {
+        listImageDefault = JSON.parse(listImageDefault);
+        files = [];
+        listImageDefault.forEach(image => {
+          files.push({
+            source: image, // Đường dẫn ảnh
+          });
+        })
+      }
+    }
+
+    filePondMulti[filepondImage.name] = FilePond.create(filepondImage, {
+      labelIdle: '+',
+      files: files
+    });
+  });
+}
+// End Filepond Image Multi
+
+
 // Biểu đồ doanh thu
 const revenueChart = document.querySelector("#revenue-chart");
 if (revenueChart) {
@@ -369,6 +401,14 @@ if (tourCreateForm) {
       const btnSummit = document.querySelector("#btnSummit");
       btnSummit.style.display = "none";
 
+       // images
+      if(filePondMulti.images.getFiles().length > 0) {
+        filePondMulti.images.getFiles().forEach(item => {
+          finalForm.append("images", item.file);
+        })
+      }
+      // End images
+
       fetch(`/${pathAdmin}/tour/create`, {
         method: "POST",
         body: finalForm,
@@ -487,6 +527,15 @@ if (tourEditForm) {
       loader.style.display = "block";
       const btnSummit = document.querySelector("#btnSummit");
       btnSummit.style.display = "none";
+
+       // images
+      if(filePondMulti.images.getFiles().length > 0) {
+        filePondMulti.images.getFiles().forEach(item => {
+          finalForm.append("images", item.file);
+        })
+      }
+      // End images
+
 
       fetch(`/${pathAdmin}/tour/edit/${id}`, {
         method: "PATCH",

@@ -10,9 +10,9 @@ module.exports.detail = async (req, res) => {
     status: "active",
   });
 
-//   if (!tourDetail) {
-//     res.redirect("/");
-//   }
+  if (!tourDetail) {
+    res.redirect("/");
+  }
 
   const breadcrumb = [];
   if (tourDetail.category) {
@@ -36,8 +36,10 @@ module.exports.detail = async (req, res) => {
     avatar: tourDetail.avatar,
   });
 
+
   res.render("client/pages/tour-detail", {
-    title: "Tour Detail",
+    title: tourDetail.name,
     breadcrumb :breadcrumb,
+    tourDetail: tourDetail
   });
 };
