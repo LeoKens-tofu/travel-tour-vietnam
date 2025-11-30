@@ -30,50 +30,16 @@ block main
                           )
           .box-tour-info
             .inner-title Thông Tin Tour
-            .inner-content
-              p
-                | Nói về dịch vụ, chắc chắn rồi, với một tiêu chí của một khách sạn 5 sao đẳng cấp, mình tin rằng Indochine Palace đủ để cho bạn đánh giá 6 sao. Từ nhà hàng, cà phê, đến trung tâm thể dục thể thao hiện đại đến Spa, xông hơi… tất tần tật các dịch vụ mà bạn mong muốn đều có ở đây.. Từ nhà hàng, cà phê, đến trung tâm thể dục thể thao hiện đại đến Spa, xông hơi… tất tần tật các dịch vụ mà bạn mong muốn đều có ở đây. . Từ nhà hàng, cà phê, đến trung tâm thể dục thể thao hiện đại đến Spa, xông hơi…
-              img(
-                alt="" 
-                src="/assets/images/banner-14.png"
-                )
-              p
-                | Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi corporis aperiam eos, ullam debitis laboriosam harum vero officiis! Eveniet quaerat eius libero ex quidem, adipisci corrupti! Sapiente explicabo quibusdam sed!
-              p
-                | Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi corporis aperiam eos, ullam debitis laboriosam harum vero officiis! Eveniet quaerat eius libero ex quidem, adipisci corrupti! Sapiente explicabo quibusdam sed!
-              p
-                | Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi corporis aperiam eos, ullam debitis laboriosam harum vero officiis! Eveniet quaerat eius libero ex quidem, adipisci corrupti! Sapiente explicabo quibusdam sed!
+            .inner-content !{tourDetail.information}
             .inner-read-more
               button.button-outline Xem tất cả
           .box-tour-schedule
             .inner-title-main Lịch Trình Tour
             .inner-list
-              .inner-item
-                .inner-title NGÀY 1 | TP.HCM - THỦ ĐÔ HÀ NỘI
-                .inner-content
-                  p
-                    | Sáng: HDV TOPTEN TRAVEL® Đón Quý Khách tại sân bay Tân Sơn Nhất làm thủ tục check in cho đoàn đi Hà Nội (Quý Khách vui lòng có mặt ở sân bay trước 2 tiếng so với giờ bay. Đến sân bay Hà Nội – Xe và HDV đón Đoàn đưa về Khách sạn nghỉ ngơi. Đoàn dùng bữa trưa tại Nhà Hàng.
-                    br
-                    | Chiều: Tham quan Viếng Chùa Trấn Quốc – Ngôi chùa Trấn Bắc cổ kính nhất Việt Nam với 1.500 năm tuổi nằm trên bán đảo cồn Quy linh thiêng, với truyền thuyết và huyền thoại về Hồ Tây, hồ Trúc Bạch. Đền Ngọc Sơn, Cầu Thê Húc, hồ Hoàn Kiếm - Trực tiếp chứng kiến cụ Rùa dài 2,1m, ngang 1,2m được trưng bày tại đền Ngọc Sơn. Văn Miếu Quốc Tử Giám – Nơi đựoc xem như Trường Đại học đầu tiên của Việt Nam với 82 tấm bia Tiến sỹ còn lưu danh sử sách.
-                    br
-                    | Tối: Đoàn dùng cơm tối tại nhà hàng. Đoàn tự do nghỉ ngơi hoặc dạo chơi thăm phố cổ Hà Nội, dạo Hồ Gươm, mua sắm tại Chợ đêm Hà Nội sầm uất...
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-15.png"
-                    )
-              .inner-item
-                .inner-title NGÀY 2 | TP.HCM - THỦ ĐÔ HÀ NỘI
-                .inner-content
-                  p
-                    | Sáng: HDV TOPTEN TRAVEL® Đón Quý Khách tại sân bay Tân Sơn Nhất làm thủ tục check in cho đoàn đi Hà Nội (Quý Khách vui lòng có mặt ở sân bay trước 2 tiếng so với giờ bay. Đến sân bay Hà Nội – Xe và HDV đón Đoàn đưa về Khách sạn nghỉ ngơi. Đoàn dùng bữa trưa tại Nhà Hàng.
-                    br
-                    | Chiều: Tham quan Viếng Chùa Trấn Quốc – Ngôi chùa Trấn Bắc cổ kính nhất Việt Nam với 1.500 năm tuổi nằm trên bán đảo cồn Quy linh thiêng, với truyền thuyết và huyền thoại về Hồ Tây, hồ Trúc Bạch. Đền Ngọc Sơn, Cầu Thê Húc, hồ Hoàn Kiếm - Trực tiếp chứng kiến cụ Rùa dài 2,1m, ngang 1,2m được trưng bày tại đền Ngọc Sơn. Văn Miếu Quốc Tử Giám – Nơi đựoc xem như Trường Đại học đầu tiên của Việt Nam với 82 tấm bia Tiến sỹ còn lưu danh sử sách.
-                    br
-                    | Tối: Đoàn dùng cơm tối tại nhà hàng. Đoàn tự do nghỉ ngơi hoặc dạo chơi thăm phố cổ Hà Nội, dạo Hồ Gươm, mua sắm tại Chợ đêm Hà Nội sầm uất...
-                  img(
-                    alt="" 
-                    src="/assets/images/banner-15.png"
-                    )
+              each item in tourDetail.schedules
+                .inner-item
+                  .inner-title #{item.title}
+                  .inner-content !{item.description}
         .inner-right
           .box-tour-detail
             .inner-title-main Chuyến Đi Của Bạn
@@ -112,7 +78,7 @@ block main
                 span.inner-highlight #{tourDetail.departureDateFormat}
             .inner-form
               label.inner-label Khởi Hành Tại:
-              select
+              select(name="locationFrom")
                 each item in cityDetail
                   option(value=item._id) #{item.name}
             .inner-quantity
@@ -126,11 +92,13 @@ block main
                       min="0" 
                       max=tourDetail.stockAdult
                       type="number"
+                      input-quantity="stockAdult"
+                      data-price=tourDetail.priceNewAdult
                       )
                   .inner-item-price
-                    span 1
+                    span(label-quantity="stockAdult") 1 
                     span x
-                    span.inner-highlight #{tourDetail.priceNewAdult.toLocaleString('vi-VN')}
+                    span.inner-highlight #{tourDetail.priceNewAdult.toLocaleString("vi-VN")}
                 .inner-item
                   .inner-item-label Trẻ em:
                   .inner-item-input
@@ -139,11 +107,13 @@ block main
                       min="0" 
                       max=tourDetail.stockChildren
                       type="number"
+                      input-quantity="stockChildren"
+                      data-price=tourDetail.priceNewChildren
                       )
                   .inner-item-price
-                    span 0
+                    span(label-quantity="stockChildren") 0
                     span x
-                    span.inner-highlight #{tourDetail.priceNewChildren.toLocaleString('vi-VN')}
+                    span.inner-highlight #{tourDetail.priceNewChildren.toLocaleString("vi-VN")}
                 .inner-item
                   .inner-item-label Em bé:
                   .inner-item-input
@@ -152,13 +122,17 @@ block main
                       min="0" 
                       max=tourDetail.stockBaby 
                       type="number"
+                      input-quantity="stockBaby"
+                      data-price=tourDetail.priceNewBaby
                       )
                   .inner-item-price
-                    span 0
+                    span(label-quantity="stockBaby") 0
                     span x
-                    span.inner-highlight #{tourDetail.priceNewBaby.toLocaleString('vi-VN')}
+                    span.inner-highlight #{tourDetail.priceNewBaby.toLocaleString("vi-VN")}
             .inner-total
               .inner-total-label Tổng cộng:
-              .inner-total-price #{tourDetail.priceNewAdult.toLocaleString('vi-VN')}
-            button.inner-button-add-cart Thêm Vào Giỏ Hàng
+              .inner-total-price 
+                span(totalPrice) #{tourDetail.priceNewAdult.toLocaleString("vi-VN")} 
+                span đ
+            button.inner-button-add-cart(button-add-card tour-id=tourDetail.id) Thêm Vào Giỏ Hàng
   // End Section 10
