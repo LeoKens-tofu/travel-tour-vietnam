@@ -378,16 +378,66 @@ if (orderForm) {
         errorMessage: "Số điện thoại không đúng định dạng!",
       },
     ])
+    .addField("#email-input", [
+      {
+        rule: "required",
+        errorMessage: "Vui lòng nhập email của bạn!",
+      },
+      {
+        rule: "email",
+        errorMessage: "Email không đúng định dạng!",
+      },
+    ])
     .onSuccess((event) => {
       const fullName = event.target.fullName.value;
       const phone = event.target.phone.value;
+      const email = event.target.email.value;
       const note = event.target.note.value;
       const method = event.target.method.value;
+      let cart = JSON.parse(localStorage.getItem("cart"));
+      cart = cart.filter((item) => {
+        return (
+          item.checked == true &&
+          item.quantityAdult + item.quantityChildren + item.quantityBaby > 0
+        );
+      });
 
-      console.log(fullName);
-      console.log(phone);
-      console.log(note);
-      console.log(method);
+      if (cart.length > 0) {
+        const dataFinal = {
+          fullName: fullName,
+          phone: phone,
+          email: email,
+          note: note,
+          paymentMethod: method,
+          items: cart
+        };
+
+        fetch(`/order/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataFinal)
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.code == 'error') {
+              notyf.error(data.message);
+            }
+            if (data.code == 'success') {
+              notify(data.code, data.message);
+              // Cap nhat gio hang
+              let cart = JSON.parse(localStorage.getItem('cart'));
+              cart = cart.filter(item => item.checked == false);
+              localStorage.setItem('cart', JSON.stringify(cart));
+
+              // Chuyển hướng đến trang thành công
+              window.location.href = `/order/success?orderCode=${data.orderCode}&phone=${phone}`;
+            }
+          })
+      } else {
+        notyf.error("Giỏ hàng của bạn đang trống!");
+      }
     });
 
   // List Input Method

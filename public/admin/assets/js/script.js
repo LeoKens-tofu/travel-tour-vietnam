@@ -108,82 +108,148 @@ if (listFilepondImage.length > 0) {
 // End Filepond Image
 
 // Filepond Image Multi
-const listFilepondImageMulti = document.querySelectorAll("[filepond-image-multi]");
+const listFilepondImageMulti = document.querySelectorAll(
+  "[filepond-image-multi]"
+);
 let filePondMulti = {};
-if(listFilepondImageMulti.length > 0) {
-  listFilepondImageMulti.forEach(filepondImage => {
+if (listFilepondImageMulti.length > 0) {
+  listFilepondImageMulti.forEach((filepondImage) => {
     FilePond.registerPlugin(FilePondPluginImagePreview);
     FilePond.registerPlugin(FilePondPluginFileValidateType);
 
     let files = null;
-    const elementListImageDefault = filepondImage.closest("[list-image-default]");
-    if(elementListImageDefault) {
-      let listImageDefault = elementListImageDefault.getAttribute("list-image-default");
-      if(listImageDefault) {
+    const elementListImageDefault = filepondImage.closest(
+      "[list-image-default]"
+    );
+    if (elementListImageDefault) {
+      let listImageDefault =
+        elementListImageDefault.getAttribute("list-image-default");
+      if (listImageDefault) {
         listImageDefault = JSON.parse(listImageDefault);
         files = [];
-        listImageDefault.forEach(image => {
+        listImageDefault.forEach((image) => {
           files.push({
             source: image, // Đường dẫn ảnh
           });
-        })
+        });
       }
     }
 
     filePondMulti[filepondImage.name] = FilePond.create(filepondImage, {
-      labelIdle: '+',
-      files: files
+      labelIdle: "+",
+      files: files,
     });
   });
 }
 // End Filepond Image Multi
 
-
 // Biểu đồ doanh thu
+const drawChart = (dateFilter) => {
+  // Lay ra thoi gian hien tai
+  const now = dateFilter;
+  const curMonth = now.getMonth() + 1;
+  const curYear = now.getFullYear();
+
+  // Lay ra thoi gian 1 thang truoc
+  const previosMonthDate = new Date(curYear, now.getMonth() - 1, 1);
+  const previousMonth = previosMonthDate.getMonth() + 1;
+  const previousYear = previosMonthDate.getFullYear();
+
+  // Lay ra so ngay
+  const daysInCurrentMonth = new Date(curYear, curMonth, 0).getDate();
+  const daysInPreviousMonth = new Date(
+    previousYear,
+    previousMonth,
+    0
+  ).getDate();
+  const days =
+    daysInCurrentMonth > daysInPreviousMonth
+      ? daysInCurrentMonth
+      : daysInPreviousMonth;
+  const arrayDate = [];
+  for (let i = 1; i <= days; i++) {
+    arrayDate.push(i);
+  }
+
+  // Gui va nhan du lieu tu backend
+  const dataFinal = {
+    curMonth: curMonth,
+    curYear: curYear,
+    previousMonth: previousMonth,
+    previousYear: previousYear,
+    arrayDate: arrayDate,
+  };
+
+  fetch(`/${pathAdmin}/dashboard/revenue-chart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataFinal),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.code == "success") {
+        const stringCanvas = `<canvas></canvas>`;
+        const parentChart = document.querySelector('.section-2 .inner-chart');
+        parentChart.innerHTML = stringCanvas;
+        const canvas = parentChart.querySelector("canvas");
+        new Chart(canvas, {
+          type: "line",
+          data: {
+            labels: arrayDate,
+            datasets: [
+              {
+                label: `Tháng ${curMonth}/${curYear}`, // Nhãn của dataset
+                data: data.dataCurrentMonth, // Dữ liệu
+                borderColor: "#4379EE", // Màu viền
+                borderWidth: 1.5, // Độ dày của đường
+              },
+              {
+                label: `Tháng ${previousMonth}/${previousYear}`, // Nhãn của dataset
+                data: data.dataPreviousMonth, // Dữ liệu
+                borderColor: "#EF3826", // Màu viền
+                borderWidth: 1.5, // Độ dày của đường
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Ngày",
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Doanh thu (VND)",
+                },
+              },
+            },
+            maintainAspectRatio: false, // Không giữ tỷ lệ khung hình mặc định
+          },
+        });
+      }
+    });
+};
+
 const revenueChart = document.querySelector("#revenue-chart");
 if (revenueChart) {
-  new Chart(revenueChart, {
-    type: "line",
-    data: {
-      labels: ["01", "02", "03", "04", "05"],
-      datasets: [
-        {
-          label: "Tháng 04/2025", // Nhãn của dataset
-          data: [1200000, 1800000, 3200000, 900000, 1600000], // Dữ liệu
-          borderColor: "#4379EE", // Màu viền
-          borderWidth: 1.5, // Độ dày của đường
-        },
-        {
-          label: "Tháng 03/2025", // Nhãn của dataset
-          data: [1000000, 900000, 1200000, 1200000, 1400000], // Dữ liệu
-          borderColor: "#EF3826", // Màu viền
-          borderWidth: 1.5, // Độ dày của đường
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        legend: {
-          position: "bottom",
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Ngày",
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: "Doanh thu (VND)",
-          },
-        },
-      },
-      maintainAspectRatio: false, // Không giữ tỷ lệ khung hình mặc định
-    },
-  });
+  drawChart(new Date());
+
+  const inputFilterMonth = document.querySelector('[month-filter]');
+  inputFilterMonth.addEventListener('change', () => {
+    const value = inputFilterMonth.value;
+    const dateFilter = new Date(value);
+    drawChart(dateFilter);
+  })
 }
 // Hết Biểu đồ doanh thu
 
@@ -401,11 +467,11 @@ if (tourCreateForm) {
       const btnSummit = document.querySelector("#btnSummit");
       btnSummit.style.display = "none";
 
-       // images
-      if(filePondMulti.images.getFiles().length > 0) {
-        filePondMulti.images.getFiles().forEach(item => {
+      // images
+      if (filePondMulti.images.getFiles().length > 0) {
+        filePondMulti.images.getFiles().forEach((item) => {
           finalForm.append("images", item.file);
-        })
+        });
       }
       // End images
 
@@ -528,14 +594,13 @@ if (tourEditForm) {
       const btnSummit = document.querySelector("#btnSummit");
       btnSummit.style.display = "none";
 
-       // images
-      if(filePondMulti.images.getFiles().length > 0) {
-        filePondMulti.images.getFiles().forEach(item => {
+      // images
+      if (filePondMulti.images.getFiles().length > 0) {
+        filePondMulti.images.getFiles().forEach((item) => {
           finalForm.append("images", item.file);
-        })
+        });
       }
       // End images
-
 
       fetch(`/${pathAdmin}/tour/edit/${id}`, {
         method: "PATCH",
@@ -591,6 +656,7 @@ if (orderEditForm) {
       },
     ])
     .onSuccess((event) => {
+      const id = event.target.id.value;
       const fullName = event.target.fullName.value;
       const phone = event.target.phone.value;
       const note = event.target.note.value;
@@ -598,12 +664,33 @@ if (orderEditForm) {
       const paymentStatus = event.target.paymentStatus.value;
       const status = event.target.status.value;
 
-      console.log(fullName);
-      console.log(phone);
-      console.log(note);
-      console.log(paymentMethod);
-      console.log(paymentStatus);
-      console.log(status);
+      const dataFinal = {
+        fullName: fullName,
+        phone: phone,
+        note: note,
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentStatus,
+        status: status,
+      };
+
+      fetch(`/${pathAdmin}/order/edit/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataFinal),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code == "error") {
+            notyf.error(data.message);
+          }
+
+          if (data.code == "success") {
+            notify(data.code, data.message);
+            window.location.reload();
+          }
+        });
     });
 }
 // End Order Edit Form
@@ -1021,7 +1108,7 @@ if (settingSaleForm) {
         saleName: saleName,
         endDate: endDate,
         salePrice: salePrice,
-        saleTour: JSON.stringify(saleTour)
+        saleTour: JSON.stringify(saleTour),
       };
 
       const loader = document.getElementById("loader");
@@ -1462,7 +1549,6 @@ if (filterReset) {
   });
 }
 //End Reset Filter
-
 
 //Check All
 const checkAll = document.querySelector("[check-all]");
