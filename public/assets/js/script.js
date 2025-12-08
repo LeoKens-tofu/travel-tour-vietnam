@@ -409,7 +409,7 @@ if (orderForm) {
           email: email,
           note: note,
           paymentMethod: method,
-          items: cart
+          items: cart,
         };
 
         fetch(`/order/create`, {
@@ -417,24 +417,35 @@ if (orderForm) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(dataFinal)
+          body: JSON.stringify(dataFinal),
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.code == 'error') {
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.code == "error") {
               notyf.error(data.message);
             }
-            if (data.code == 'success') {
+            if (data.code == "success") {
               notify(data.code, data.message);
               // Cap nhat gio hang
-              let cart = JSON.parse(localStorage.getItem('cart'));
-              cart = cart.filter(item => item.checked == false);
-              localStorage.setItem('cart', JSON.stringify(cart));
-
-              // Chuyển hướng đến trang thành công
-              window.location.href = `/order/success?orderCode=${data.orderCode}&phone=${phone}`;
+              switch (method) {
+                case "money":
+                case "bank":
+                  // Chuyển hướng đến trang thành công
+                  let cart = JSON.parse(localStorage.getItem("cart"));
+                  cart = cart.filter((item) => item.checked == false);
+                  localStorage.setItem("cart", JSON.stringify(cart));
+                  window.location.href = `/order/success?orderCode=${data.orderCode}&phone=${phone}`;
+                  break;
+                case "zalopay":
+                  // Chuyển sang trang thanh toán bằng ZaloPay
+                  window.location.href = `/order/payment-zalopay?orderCode=${data.orderCode}&phone=${phone}`;
+                  break;
+                case "vnpay":
+                  window.location.href = `/order/payment-vnpay?orderCode=${data.orderCode}&phone=${phone}`;
+                  break;
+              }
             }
-          })
+          });
       } else {
         notyf.error("Giỏ hàng của bạn đang trống!");
       }
