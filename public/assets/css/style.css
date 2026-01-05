@@ -99,9 +99,17 @@ input, button, textarea {
   align-items: center;
 }
 
-.header .inner-logo img {
-  height: 50px;
-  width: auto;
+.header .inner-logo a {
+  font-weight: 800;
+  font-size: 24px;
+}
+
+.header .inner-logo a span:nth-child(1) {
+  color: var(--color-primary);
+}
+
+.header .inner-logo a span:nth-child(2) {
+  color: var(--color-text);
 }
 
 .header .inner-menu > ul {
